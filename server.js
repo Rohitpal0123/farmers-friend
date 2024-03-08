@@ -15,7 +15,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("A user disconnected - ", socket.id);
   });
-})
+});
 
 const dht12Router = require("./routes/dht12");
 const mq2Router = require("./routes/mq2");
@@ -28,6 +28,9 @@ app.use("/soil", soilRouter(io));
 app.use("/mq2Smoke", mq2SmokeRouter(io));
 app.use("/mq2", mq2Router(io));
 app.use("/dht12", dht12Router(io));
+app.use("/", (req, res) => {
+  res.send("Welcome to Farmers Friend");
+});
 
 httpServer.listen(8881, () => {
   console.log("HTTP server is running on port 8881");
