@@ -5,7 +5,6 @@ const connectDB = require("./config/db");
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer);
-const {emitDHT12} = require("./controllers/DHT12/emit");
 require("dotenv").config();
 
 connectDB();
@@ -17,11 +16,19 @@ io.on("connection", (socket) => {
     console.log("A user disconnected - ", socket.id);
   });
 })
+
 const dht12Router = require("./routes/dht12");
+const mq2Router = require("./routes/mq2");
+const mq2SmokeRouter = require("./routes/mq2Smoke");
+const rainRouter = require("./routes/rain");
+const soilRouter = require("./routes/soil");
 
-app.use("/dht12", dht12Router);
+app.use("/rain", rainRouter(io));
+app.use("/soil", soilRouter(io));
+app.use("/mq2Smoke", mq2SmokeRouter(io));
+app.use("/mq2", mq2Router(io));
+app.use("/dht12", dht12Router(io));
 
-emitDHT12(io);
 httpServer.listen(8881, () => {
   console.log("HTTP server is running on port 8881");
 });
