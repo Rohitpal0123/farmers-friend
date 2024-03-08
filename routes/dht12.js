@@ -1,6 +1,12 @@
 const express = require("express");
 const router = express.Router();
+const addDHT12 = require("../controllers/DHT12/add.js")
 
-router.post("/add", require("../controllers/DHT12/add").process);
 
-module.exports = router;
+module.exports = (io) => {
+  // Routes that need io
+  router.post('/add', (req, res) => addDHT12.process(req, res, io));
+
+
+  return router;
+};
