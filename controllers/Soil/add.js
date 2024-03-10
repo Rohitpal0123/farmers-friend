@@ -12,7 +12,36 @@ class addSoil {
         moistureLevel,
       });
 
-      io.emit("soil", addSoil);
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const soilMoistureAverageAggregation = await SOIL.aggregate([
+        {
+          $match: {
+            createdAt: {
+              $gte: startOfDay,
+              $lt: endOfDay,
+            },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            avgSoilMoisture: {
+              $avg: "$moisturePercentage",
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+          },
+        },
+      ]);
+
+      io.emit("soil", addSoil, soilMoistureAverageAggregation);
 
       res.status(201).send(addSoil);
     } catch (error) {
@@ -23,3 +52,5 @@ class addSoil {
 }
 
 module.exports = new addSoil();
+
+

@@ -11,12 +11,3 @@ const soilSchema = new Schema(
 
 const SOIL = mongoose.model("Soil", soilSchema);
 module.exports = SOIL;
-
-
-
-
-
-    // moisturePercentage
-    // 99.95
-    // moistureLevel
-    // "Very Moist"
