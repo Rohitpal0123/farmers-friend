@@ -22,7 +22,9 @@ const mq2Router = require("./routes/mq2");
 const mq2SmokeRouter = require("./routes/mq2Smoke");
 const rainRouter = require("./routes/rain");
 const soilRouter = require("./routes/soil");
+const cropsRouter = require("./routes/crops");
 
+app.use("/crops", cropsRouter(io));
 app.use("/rain", rainRouter(io));
 app.use("/soil", soilRouter(io));
 app.use("/mq2Smoke", mq2SmokeRouter(io));

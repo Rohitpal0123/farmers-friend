@@ -1,10 +1,6 @@
 const MQ2 = require("../../models/mq2.model.js");
 
 class addMQ2 {
-  emitMQ2 = (io, data) => {
-    io.emit("mq2", data);
-  };
-
   process = async (req, res, io) => {
     try {
       const data = req.body;
@@ -13,7 +9,43 @@ class addMQ2 {
       const addData = await MQ2.create({ device, ...data });
       if (!addData) throw "MQ2 data not added!";
 
-      this.emitMQ2(io, addData);
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const mq2AverageAggregation = await MQ2.aggregate([
+        {
+          $match: {
+            createdAt: {
+              $gte: startOfDay,
+              $lt: endOfDay,
+            },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            coPPMAverage: {
+              $avg: "$coPPM",
+            },
+            lngPPMAverage: {
+              $avg: "$lngPPM",
+            },
+            h2PPMAverage: {
+              $avg: "$h2PPM",
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+          },
+        },
+      ]);
+      console.log("🚀 ~ mq2AverageAggregation:", mq2AverageAggregation);
+
+      io.emit("mq2", addData, mq2AverageAggregation);
       res.status(200).send(addData);
     } catch (error) {
       console.log("🚀 ~ error:", error);
@@ -23,15 +55,3 @@ class addMQ2 {
 }
 
 module.exports = new addMQ2();
-// isCODetected
-// false
-// isH2Detected
-// false
-// isLNGDetected
-// false
-// coPPM
-// 1.5
-// h2PPM
-// 0.32
-// lngPPM
-// 0.25
