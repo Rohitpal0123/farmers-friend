@@ -8,7 +8,6 @@ const io = new Server(httpServer);
 require("dotenv").config();
 
 connectDB();
-
 app.use(express.json());
 io.on("connection", (socket) => {
   console.log("A user connected - ", socket.id);
