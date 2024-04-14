@@ -47,7 +47,7 @@ class addDHT12 {
         },
       ]);
 
-      io.("dht12", addData, dht12AverageAggregation);
+      io.emit("dht12", addData, dht12AverageAggregation);
       res.status(200).send(addData);
     } catch (error) {
       console.log("🚀 ~ error:", error);
