@@ -1,14 +1,21 @@
 const express = require("express");
+const cors = require("cors")
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const connectDB = require("./config/db");
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "https://dashboard-crop.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  }
+});
 require("dotenv").config();
 
 connectDB();
 app.use(express.json());
+app.use(cors());
 io.on("connection", (socket) => {
   console.log("A user connected - ", socket.id);
   socket.on("disconnect", () => {
